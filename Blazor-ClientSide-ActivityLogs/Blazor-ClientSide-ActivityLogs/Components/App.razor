@@ -15,9 +15,17 @@
 
 <body>
     <Routes />
+    <div id="replayPopup" class="replay-popup">
+        <div class="replay-header">
+            <h4>Replay Steps</h4>
+            <button id="playReplayBtn" class="replay-btn" onclick="startReplay()">Play</button>
+            <button id="stopReplayBtn" class="replay-btn" onclick="stopReplay()">Stop</button>
+            <button id="refreshReplayBtn" class="replay-btn" onclick="stopReplay()">Refresh</button>
+        </div>
+        <ul id="replayStepList" class="replay-step-list"></ul>
+    </div>
     <script src="_framework/blazor.web.js"></script>
     <script>
-        // On page load, wire up the click listener
         window.addEventListener('DOMContentLoaded', () => {
             let lastFiveClicks = JSON.parse(localStorage.getItem('lastFiveClicks')) || [];
 
@@ -27,6 +35,10 @@
                 let clickX = e.clientX;
                 let clickY = e.clientY;
 
+                // NEW: store viewport size
+                const screenW = window.innerWidth;
+                const screenH = window.innerHeight;
+
                 const readableTarget = targetToString(e.target);
 
                 let clickEntry = {
@@ -35,21 +47,19 @@
                     class: elementClass,
                     x: clickX,
                     y: clickY,
-                    time: new Date().toISOString()
+                    time: new Date().toISOString(),
+                    screenWidth: screenW,
+                    screenHeight: screenH
                 };
 
-                // Add to the array
+                // Add to the array, keep only last 5
                 lastFiveClicks.push(clickEntry);
-
-                // Keep only the last 5
                 if (lastFiveClicks.length > 5) {
                     lastFiveClicks.shift();
                 }
 
-                // Store in localStorage
                 localStorage.setItem('lastFiveClicks', JSON.stringify(lastFiveClicks));
 
-                // Show a small popup (toast)
                 showClickPopup(elementClass);
             });
 
@@ -58,22 +68,15 @@
                     return "Unknown Element";
                 }
 
-                // Tag name in lowercase, e.g. "button"
                 const tag = el.tagName.toLowerCase();
-
-                // If there's an ID, prefix it with '#', e.g. "#submitBtn"
                 const idPart = el.id ? `#${el.id}` : "";
-
-                // Build up the class list, e.g. ".btn.btn-primary"
                 let classPart = "";
                 if (el.classList && el.classList.length > 0) {
                     classPart = "." + Array.from(el.classList).join(".");
                 }
 
-                // Optionally handle some special element types
                 let extraInfo = "";
                 if (tag === "input" || tag === "button") {
-                    // e.g. <button type="submit">
                     const typeAttr = el.getAttribute("type");
                     if (typeAttr) {
                         extraInfo = `(type=${typeAttr})`;
@@ -83,25 +86,183 @@
                 return `${tag}${idPart}${classPart} ${extraInfo}`.trim();
             }
 
-
-            // Minimalistic toast function
+            // Minimal toast display
             function showClickPopup(clickedClass) {
-                // Create a new div
                 const popup = document.createElement('div');
                 popup.innerText = `Clicked: ${clickedClass || "(no class)"} `;
                 popup.className = "click-popup";
 
-                // Append to container
                 const container = document.getElementById('clickPopupContainer');
                 container.appendChild(popup);
 
-                // Remove after 2 seconds
                 setTimeout(() => {
                     popup.remove();
                 }, 2000);
             }
         });
     </script>
+    <script>
+        // We'll store clicks globally and reference them in replay
+        let replayClicksArray = [];
+        let replayIndex = 0;
+        let replayInProgress = false;
+
+        // On page load, read the stored clicks and populate the step list
+        window.addEventListener('DOMContentLoaded', () => {
+            populateReplayStepsUI();
+        });
+
+        function populateReplayStepsUI() {
+            const stored = localStorage.getItem('lastFiveClicks');
+            if (!stored) {
+                console.warn("No clicks found in localStorage.");
+                return;
+            }
+
+            const clicks = JSON.parse(stored);
+            if (!Array.isArray(clicks) || clicks.length === 0) {
+                console.warn("No valid clicks to replay.");
+                return;
+            }
+
+            replayClicksArray = clicks;
+            const stepList = document.getElementById('replayStepList');
+            stepList.innerHTML = ""; // Clear existing
+
+            // Build each step line
+            for (let i = 0; i < clicks.length; i++) {
+                const c = clicks[i];
+                const li = document.createElement('li');
+                li.className = "replay-step";
+                li.innerHTML = `
+                    <div class="step-index">Step ${i+1}:</div>
+                    <div class="step-details">
+                        <strong>Target:</strong> ${c.target || "(unknown)"} <br/>
+                        <strong>Class:</strong> ${c.class || "(no class)"} <br/>
+                        <strong>Position:</strong> (${c.x}, ${c.y})
+                    </div>
+                `;
+                stepList.appendChild(li);
+            }
+        }
+
+        // Play button triggers the replay
+        async function startReplay() {
+            populateReplayStepsUI();
+
+            if (!replayClicksArray || replayClicksArray.length === 0) {
+                console.warn("No steps to replay.");
+                return;
+            }
+
+            // Reset
+            replayIndex = 0;
+            replayInProgress = true;
+
+            // Visual feedback for active step
+            highlightCurrentStep(replayIndex);
+
+            console.log(`Replaying ${replayClicksArray.length} clicks...`);
+            for (let i = 0; i < replayClicksArray.length; i++) {
+                // If user hits "Stop", break immediately
+                if (!replayInProgress) {
+                    console.log("Replay stopped by user.");
+                    break;
+                }
+
+                const click = replayClicksArray[i];
+                console.log(`Replaying step #${i+1}: `, click);
+
+                // Attempt #1: Try a CSS selector approach
+                const el = findElementByTargetString(click.target);
+                if (el) {
+                    console.log(" - Found element via selector; clicking...");
+                    el.click();
+                } else {
+                    // Fallback to coordinate-based click
+                    console.warn(" - Could not find element by selector; falling back to coordinates...");
+                    replayClickByCoordinates(click.x, click.y, click.screenWidth, click.screenHeight);
+                }
+
+                // Highlight this step in the UI
+                highlightCurrentStep(i);
+
+                // Wait 1 second between clicks
+                await delay(1000);
+            }
+
+            // After finishing the loop
+            replayInProgress = false;
+            console.log("Replay finished.");
+        }
+
+        // Stop button
+        function stopReplay() {
+            replayInProgress = false;
+        }
+
+        function refreshReplay() {
+            populateReplayStepsUI();
+        }
+
+        function findElementByTargetString(targetStr) {
+            if (!targetStr) return null;
+
+            // Example: "button#myId.btn.btn-primary (type=submit)"
+            // remove " (type=...)" portion
+            const bracketIdx = targetStr.indexOf(" (type=");
+            let baseStr = bracketIdx > -1 ? targetStr.substring(0, bracketIdx) : targetStr;
+            baseStr = baseStr.trim();
+
+            try {
+                return document.querySelector(baseStr);
+            } catch (err) {
+                console.warn("Selector parse error:", err);
+                return null;
+            }
+        }
+
+        function replayClickByCoordinates(originalX, originalY, originalW, originalH) {
+            const currentW = window.innerWidth;
+            const currentH = window.innerHeight;
+
+            // If original screenWidth/Height missing, default to current
+            const ow = originalW || currentW;
+            const oh = originalH || currentH;
+
+            const xRatio = currentW / ow;
+            const yRatio = currentH / oh;
+
+            const adjustedX = Math.floor(originalX * xRatio);
+            const adjustedY = Math.floor(originalY * yRatio);
+
+            const el = document.elementFromPoint(adjustedX, adjustedY);
+            if (!el) {
+                console.warn(`No element found at point (${adjustedX}, ${adjustedY}).`);
+                return;
+            }
+            el.click();
+            console.log(` - Clicked element by coords: ${el.tagName.toLowerCase()} at scaled coords (${adjustedX},${adjustedY})`);
+        }
+
+        function highlightCurrentStep(index) {
+            const stepList = document.getElementById('replayStepList');
+            if (!stepList) return;
+            const items = stepList.querySelectorAll('.replay-step');
+            items.forEach((item, idx) => {
+                if (idx === index) {
+                    item.classList.add('active-step');
+                } else {
+                    item.classList.remove('active-step');
+                }
+            });
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+
 </body>
 
 </html>

@@ -223,3 +223,92 @@ h3 {
         opacity: 0;
     }
 }
+
+
+/* REPLAY POPUP */
+
+/* Replay popup container at bottom-left */
+.replay-popup {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    width: 300px;
+    background-color: #f8f9fa; /* Light gray (Bootstrap-like) */
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Header area with title & buttons */
+.replay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .replay-header h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+/* Replay buttons */
+.replay-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+    .replay-btn:hover {
+        background-color: #005cbf;
+    }
+
+/* Step list styling */
+.replay-step-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    max-height: 300px;
+    overflow-y: auto; /* scroll if too long */
+}
+
+/* Each step row */
+.replay-step {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+/* Step index label */
+.step-index {
+    font-weight: bold;
+    color: #007bff;
+    min-width: 60px;
+}
+
+/* Step details sub-block */
+.step-details {
+    flex: 1;
+}
+
+/* Highlight the active step */
+.active-step {
+    background-color: #e9f0ff; /* subtle highlight for the active step */
+    border-color: #b6d4fe;
+}
