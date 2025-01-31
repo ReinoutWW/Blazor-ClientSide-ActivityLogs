@@ -1,5 +1,9 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fefefe; /* Very light, near-white background */
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #333; /* Dark gray text */
 }
 
 a, .btn-link {
@@ -59,32 +63,151 @@ h1:focus {
     text-align: start;
 }
 
-.sandbox-container {
-    padding: 1rem;
-    border: 1px solid #e5e5e5;
+h3 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
 }
 
-.sandbox-container * {
-    margin: 0.5rem;
-}
-
-.clicks-container {
-    padding: 1rem;
-    border: 1px solid #e5e5e5;
-    border-bottom: 1px dashed #e5e5e5;
-    margin-bottom: 3rem;
+/* Top-right popup container */
+#clickPopupContainer {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
 }
 
 .click-popup {
-    background-color: #333; /* dark background */
-    color: #fff; /* white text */
+    background-color: #007bff; 
+    color: #fff;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: fade-out 2s forwards;
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.clicks-container {
+    background-color: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.clicks-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.clicks-container li {
+    background-color: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #007bff; 
+    color: #ffffff;
+}
+
+    .btn-primary:hover {
+        background-color: #005cbf;
+    }
+
+.sandbox-container {
+    background-color: #f9f9f9;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.sandbox-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.sandbox-container a:hover {
+    text-decoration: underline;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.table td, .table th {
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 4px;
+    color: #084298;
+    background-color: #cce5ff;
+    border: 1px solid #b6e0fe;
+    margin-top: 1rem;
+}
+
+.alert-primary {
+    background-color: #cce5ff;
+    border-color: #b6e0fe;
+}
+
+.sandbox-container video,
+.sandbox-container iframe {
+    max-width: 100%;
+}
+
+.click-popup {
+    background-color: #333; 
+    color: #fff; 
     padding: 0.5rem 1rem;
     margin-bottom: 0.5rem;
     border-radius: 4px;
     font-size: 0.9rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     animation: fade-out 2s forwards;
-    /* "forwards" so it stays at 0 opacity after finishing. */
 }
 
 @keyframes fade-out {

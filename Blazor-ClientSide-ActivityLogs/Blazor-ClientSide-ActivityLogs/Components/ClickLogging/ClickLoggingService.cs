@@ -23,6 +23,7 @@ public class ClickLoggerService
             return JsonSerializer.Deserialize<List<ClickEntry>>(resultJson)
                    ?? new List<ClickEntry>();
         }
+
         return new List<ClickEntry>();
     }
 }

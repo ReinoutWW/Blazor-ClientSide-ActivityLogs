@@ -6,13 +6,12 @@
 
 @rendermode InteractiveServer
 
-<!-- Popup container for top-right corner -->
 <div id="clickPopupContainer" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;">
 </div>
 
 <h3>Latest 5 from Service</h3>
 
-<button class="btn btn-primary" @onclick="GetClickData">Reload</button>
+<button class="btn btn-primary" @onclick="GetClickData">Show clicks</button>
 
 <div class="clicks-container">
     @if (lastFiveClicks is not null && lastFiveClicks.Any())
@@ -31,8 +30,8 @@
     }
 </div>
 
+@* Example elements to test logging activity *@
 <div class="sandbox-container">
-    @* Example elements to test logging activity *@
     <a href="/LastFiveFromService">Link</a>
     <button class="btn btn-primary">Button</button>
     <input type="text" class="form-control" />
