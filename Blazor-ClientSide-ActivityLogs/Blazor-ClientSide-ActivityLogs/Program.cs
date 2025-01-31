@@ -1,10 +1,13 @@
 using Blazor_ClientSide_ActivityLogs.Components;
+using Blazor_ClientSide_ActivityLogs.Components.ClickLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<ClickLoggerService>();
 
 var app = builder.Build();
 

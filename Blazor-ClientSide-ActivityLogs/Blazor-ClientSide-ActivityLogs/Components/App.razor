@@ -16,6 +16,40 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        (function () {
+            // Attempt to load existing clicks from localStorage
+            let lastFiveClicks = JSON.parse(localStorage.getItem('lastFiveClicks')) || [];
+
+            // Listen for every click
+            document.addEventListener('click', function (event) {
+                let route = window.location.href;
+                let elementClass = event.target.className;
+                let clickX = event.clientX;
+                let clickY = event.clientY;
+
+                // Build an entry
+                let clickEntry = {
+                    route: route,
+                    class: elementClass,
+                    x: clickX,
+                    y: clickY,
+                    time: new Date().toISOString()
+                };
+
+                // Add to array
+                lastFiveClicks.push(clickEntry);
+
+                // Keep only the latest 5
+                if (lastFiveClicks.length > 5) {
+                    lastFiveClicks.shift();
+                }
+
+                // Store back to localStorage
+                localStorage.setItem('lastFiveClicks', JSON.stringify(lastFiveClicks));
+            });
+        })();
+    </script>
 </body>
 
 </html>
