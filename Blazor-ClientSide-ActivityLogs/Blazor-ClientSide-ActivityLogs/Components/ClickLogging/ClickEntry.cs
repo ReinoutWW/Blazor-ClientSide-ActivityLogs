@@ -6,7 +6,10 @@ public class ClickEntry
 {
     [JsonPropertyName("route")]
     public string? Route { get; set; }
-    
+
+    [JsonPropertyName("target")]
+    public string? Target { get; set; }
+
     [JsonConverter(typeof(LenientStringConverter))]
     [JsonPropertyName("class")]
     public string? Class { get; set; }

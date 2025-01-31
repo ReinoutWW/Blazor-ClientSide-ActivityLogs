@@ -27,8 +27,11 @@
                 let clickX = e.clientX;
                 let clickY = e.clientY;
 
+                const readableTarget = targetToString(e.target);
+
                 let clickEntry = {
                     route: route,
+                    target: readableTarget,
                     class: elementClass,
                     x: clickX,
                     y: clickY,
@@ -49,6 +52,37 @@
                 // Show a small popup (toast)
                 showClickPopup(elementClass);
             });
+
+            function targetToString(el) {
+                if (!el || !el.tagName) {
+                    return "Unknown Element";
+                }
+
+                // Tag name in lowercase, e.g. "button"
+                const tag = el.tagName.toLowerCase();
+
+                // If there's an ID, prefix it with '#', e.g. "#submitBtn"
+                const idPart = el.id ? `#${el.id}` : "";
+
+                // Build up the class list, e.g. ".btn.btn-primary"
+                let classPart = "";
+                if (el.classList && el.classList.length > 0) {
+                    classPart = "." + Array.from(el.classList).join(".");
+                }
+
+                // Optionally handle some special element types
+                let extraInfo = "";
+                if (tag === "input" || tag === "button") {
+                    // e.g. <button type="submit">
+                    const typeAttr = el.getAttribute("type");
+                    if (typeAttr) {
+                        extraInfo = `(type=${typeAttr})`;
+                    }
+                }
+
+                return `${tag}${idPart}${classPart} ${extraInfo}`.trim();
+            }
+
 
             // Minimalistic toast function
             function showClickPopup(clickedClass) {
