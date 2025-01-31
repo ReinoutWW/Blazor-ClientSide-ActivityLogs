@@ -58,3 +58,45 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.sandbox-container {
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+}
+
+.sandbox-container * {
+    margin: 0.5rem;
+}
+
+.clicks-container {
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+    border-bottom: 1px dashed #e5e5e5;
+    margin-bottom: 3rem;
+}
+
+.click-popup {
+    background-color: #333; /* dark background */
+    color: #fff; /* white text */
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fade-out 2s forwards;
+    /* "forwards" so it stays at 0 opacity after finishing. */
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

@@ -17,18 +17,16 @@
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script>
-        (function () {
-            // Attempt to load existing clicks from localStorage
+        // On page load, wire up the click listener
+        window.addEventListener('DOMContentLoaded', () => {
             let lastFiveClicks = JSON.parse(localStorage.getItem('lastFiveClicks')) || [];
 
-            // Listen for every click
-            document.addEventListener('click', function (event) {
+            document.addEventListener('click', (e) => {
                 let route = window.location.href;
-                let elementClass = event.target.className;
-                let clickX = event.clientX;
-                let clickY = event.clientY;
+                let elementClass = e.target.className;
+                let clickX = e.clientX;
+                let clickY = e.clientY;
 
-                // Build an entry
                 let clickEntry = {
                     route: route,
                     class: elementClass,
@@ -37,18 +35,38 @@
                     time: new Date().toISOString()
                 };
 
-                // Add to array
+                // Add to the array
                 lastFiveClicks.push(clickEntry);
 
-                // Keep only the latest 5
+                // Keep only the last 5
                 if (lastFiveClicks.length > 5) {
                     lastFiveClicks.shift();
                 }
 
-                // Store back to localStorage
+                // Store in localStorage
                 localStorage.setItem('lastFiveClicks', JSON.stringify(lastFiveClicks));
+
+                // Show a small popup (toast)
+                showClickPopup(elementClass);
             });
-        })();
+
+            // Minimalistic toast function
+            function showClickPopup(clickedClass) {
+                // Create a new div
+                const popup = document.createElement('div');
+                popup.innerText = `Clicked: ${clickedClass || "(no class)"} `;
+                popup.className = "click-popup";
+
+                // Append to container
+                const container = document.getElementById('clickPopupContainer');
+                container.appendChild(popup);
+
+                // Remove after 2 seconds
+                setTimeout(() => {
+                    popup.remove();
+                }, 2000);
+            }
+        });
     </script>
 </body>
 
